@@ -32,3 +32,11 @@
   border-radius: 5px;
   
 }
+
+.inputButton{
+  width: 100%;
+  margin-top: 16px;
+  padding: 8px;
+  border-radius: 5px;
+  border-color: gray;
+}
