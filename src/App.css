@@ -1,8 +1,13 @@
+*{
+  font-family: 'Handlee', cursive;
+}
 .mainContainer {
   display: flex;
+  background-image: url("./utils/backgound.jpg");
   justify-content: center;
   width: 100%;
-  margin-top: 64px;
+  height: 100vh;
+  background-size: cover; 
 }
 
 .dataContainer {
@@ -14,13 +19,14 @@
 
 .header {
   text-align: center;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 600;
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 }
 
-.bio {
+.info {
   text-align: center;
-  color: gray;
+  color: rgb(58, 58, 58);
   margin-top: 16px;
 }
 
@@ -30,7 +36,7 @@
   padding: 8px;
   border: 0;
   border-radius: 5px;
-  
+  background-color: #F4EBD0;
 }
 
 .inputButton{
@@ -39,4 +45,12 @@
   padding: 8px;
   border-radius: 5px;
   border-color: gray;
+}
+
+.confirmations{
+  background-color: #FFD700;
+  margin-bottom: 16px;
+  color: rgb(58, 58, 58);
+  padding: 8px;
+  border-radius: 5px;
 }

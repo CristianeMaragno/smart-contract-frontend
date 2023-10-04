@@ -1,131 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { ethers } from "ethers";
 import './App.css';
 import abi from "./utils/contract.json";
+import {CheckIfWalletIsConnected, ConnectWallet} from './utils/wallet';
+import {GetAllConfirmations, Confirm} from './utils/contractUse';
 
 export default function App() {
 
   const [currentAccount, setCurrentAccount] = useState("");
   const [allConfirmations, setAllConfirmations] = useState([]);
   const [message, setMessage] = useState('');
-  
-  const contractAddress = "0x6d8e2f154e67088F197eBE339699ce0314f42c7A";
-  const contractABI = abi.abi;
 
-  const checkIfWalletIsConnected = async () => {
-    try {
-      const { ethereum } = window;
+  useEffect(async () => {
+    let account = await CheckIfWalletIsConnected();
+    setCurrentAccount(account);
 
-      if (!ethereum) {
-        console.log("Garanta que possua a Metamask instalada!");
-        return;
-      } else {
-        console.log("Temos o objeto ethereum", ethereum);
-      }
-
-      const accounts = await ethereum.request({ method: "eth_accounts" });
-
-      if (accounts.length !== 0) {
-        const account = accounts[0];
-        console.log("Encontrada a conta autorizada:", account);
-        setCurrentAccount(account)
-        getAllConfirmations()
-      } else {
-        console.log("Nenhuma conta autorizada foi encontrada")
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  /**
-  * Implemente aqui o seu método connectWallet
-  */
-  const connectWallet = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (!ethereum) {
-        alert("MetaMask encontrada!");
-        return;
-      }
-
-      const accounts = await ethereum.request({ method: "eth_requestAccounts" });
-
-      console.log("Conectado", accounts[0]);
-      setCurrentAccount(accounts[0]);
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  useEffect(() => {
-    checkIfWalletIsConnected();
+    let confirmations = await GetAllConfirmations();
+    setAllConfirmations(confirmations);
   }, [])
-
-  const confirm = async () => {
-    try {
-      const { ethereum } = window;
-
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const InvitationPortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-
-        let count = await InvitationPortalContract.getTotalConfirmations();
-        console.log("Get total number of confirmations...", count.toNumber());
-        const confirmTxn = await InvitationPortalContract.confirm(message);
-        console.log("Mining...", confirmTxn.hash);
-
-        await confirmTxn.wait();
-        console.log("Mining -- ", confirmTxn.hash);
-
-        count = await InvitationPortalContract.getTotalConfirmations();
-        console.log("Get total number of confirmations...", count.toNumber());
-      } else {
-        console.log("Ethereum object not found!");
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const getAllConfirmations = async () => {
-    try {
-      const { ethereum } = window;
-      if (ethereum) {
-        const provider = new ethers.providers.Web3Provider(ethereum);
-        const signer = provider.getSigner();
-        const InvitationPortalContract = new ethers.Contract(contractAddress, contractABI, signer);
-        /*
-         * Chama o método getAllWaves do seu contrato inteligente
-         */
-        const confirmations = await InvitationPortalContract.getAllConfirmations();
-
-
-        /*
-         * Apenas precisamos do endereço, data/horário, e mensagem na nossa tela, então vamos selecioná-los
-         */
-        let confirmationsCleaned = [];
-        confirmations.forEach(confirmation => {
-          confirmationsCleaned.push({
-            address: confirmation.waver,
-            timestamp: new Date(confirmation.timestamp * 1000),
-            message: confirmation.message
-          });
-        });
-
-        /*
-         * Armazenando os dados
-         */
-        setAllConfirmations(confirmationsCleaned);
-      } else {
-        console.log("Objeto Ethereum não existe!")
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   const handleChange = event => {
     setMessage(event.target.value);
@@ -135,13 +26,20 @@ export default function App() {
     <div className="mainContainer">
 
       <div className="dataContainer">
+        <p className="info">Seria um prazer que você se <br/>junto a nós para o</p>
         <div className="header">
-        👋 Olá, você foi convidado para um super evento!
+          Evento exlusivo Web 3
         </div>
 
-        <div className="bio">
-        Clique no botão abaixo para confirmar sua presença
+        <div className="info">
+          Sábado, dia 01/01/0001<br/>
+          Teatro Ramos Meireles<br/>
+          19:00 hrs
         </div>
+
+        <p className="info">Clique no botão abaixo para confirmar sua presença.</p>
+        <p className="info">Também há um campo para observações, utilize para marcar <br/>
+        qualquer informação relevante como número de acompanhantes, alergias, etc.</p>
 
         <div>
           <input
@@ -154,21 +52,23 @@ export default function App() {
           />
         </div>
 
-        <button className="waveButton" onClick={confirm}>
-          Confirmar presença 🌟
+        <button className="waveButton" onClick={Confirm}>
+          Confirmar presença
         </button>
         {/*
         * Se não existir currentAccount, apresente este botão
         */}
         {!currentAccount && (
-          <button className="waveButton" onClick={connectWallet}>
+          <button className="waveButton" onClick={ConnectWallet}>
             Conectar carteira
           </button>
         )}
 
+        <p>Lista de confirmações:</p>
+
         {allConfirmations.map((confirmation, index) => {
           return (
-            <div key={index} style={{ backgroundColor: "OldLace", marginTop: "16px", padding: "8px" }}>
+            <div key={index} className="confirmations">
               <div>Endereço: {confirmation.address}</div>
               <div>Data/Horário: {confirmation.timestamp.toString()}</div>
               <div>Mensagem: {confirmation.message}</div>
