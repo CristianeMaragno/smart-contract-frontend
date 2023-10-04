@@ -34,7 +34,8 @@ export const GetAllConfirmations = async () => {
 			*/
 			return confirmationsCleaned;
 		} else {
-			console.log("Objeto Ethereum não existe!")
+			console.log("Objeto Ethereum não existe!");
+			return [];
 		}
 	} catch (error) {
 		console.log(error);

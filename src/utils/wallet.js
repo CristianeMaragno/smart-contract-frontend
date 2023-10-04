@@ -19,6 +19,7 @@ export const CheckIfWalletIsConnected = async () => {
       return account;
     } else {
       console.log("Nenhuma conta autorizada foi encontrada")
+      return null;
     }
   } catch (error) {
     console.log(error);

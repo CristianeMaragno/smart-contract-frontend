@@ -66,7 +66,7 @@ export default function App() {
 
         <p>Lista de confirmações:</p>
 
-        {allConfirmations.map((confirmation, index) => {
+        {allConfirmations?.map((confirmation, index) => {
           return (
             <div key={index} className="confirmations">
               <div>Endereço: {confirmation.address}</div>
